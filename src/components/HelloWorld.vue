@@ -2,26 +2,37 @@
     <div>
         <div>
             <h1>摸鱼贪吃蛇</h1>
-            <h2>得分:{{score}}</h2>
+            <h2>得分:{{ score }}</h2>
         </div>
         <div class="hello">
-            <div class="table" @keyup:click.ctrl="keyEvent" :style="{width:17*size+'px'}">
+            <v-touch
+                v-on:swipeleft="eventTouch(37)"
+                v-on:swiperight="eventTouch(39)"
+                v-on:swipeup="eventTouch(38)"
+                v-on:swipedown="eventTouch(40)"
+            >
                 <div
-                    v-for="(item, index) in coordinate"
-                    :key="index"
-                    class="em"
-                    :style="{ float: item.y / size !== 1 ? '' : '' }"
-                    :item="item.x+'-'+item.y"
+                    class="table"
+                    @keyup:click.ctrl="keyEvent"
+                    :style="{ width: 17 * size + 'px' }"
                 >
                     <div
-                        :class="{
-                            food: item.type == 'food',
-                            'snake-header': item.type == 'snakeHeader',
-                            'snake-body': item.type == 'snakeBody',
-                        }"
-                    ></div>
+                        v-for="(item, index) in coordinate"
+                        :key="index"
+                        class="em"
+                        :style="{ float: item.y / size !== 1 ? '' : '' }"
+                        :item="item.x + '-' + item.y"
+                    >
+                        <div
+                            :class="{
+                                food: item.type == 'food',
+                                'snake-header': item.type == 'snakeHeader',
+                                'snake-body': item.type == 'snakeBody',
+                            }"
+                        ></div>
+                    </div>
                 </div>
-            </div>
+            </v-touch>
         </div>
         <div>
             <h2>{{ msg }}</h2>
@@ -37,7 +48,7 @@ export default {
     name: "HelloWorld",
     data() {
         return {
-            score:0,
+            score: 0,
             size: 20,
             coordinate: [],
             food: {},
@@ -46,7 +57,7 @@ export default {
             moveTimer: "",
             msg: "按方向键开始游戏", //提示语
             speed: 200, //速度 ms
-            gameover:true
+            gameover: true,
         };
     },
     watch: {
@@ -54,9 +65,12 @@ export default {
             handler(newval) {
                 this.coordinate.map((item) => {
                     if (item.x === newval.x && item.y === newval.y) {
-                        if(item.type ==="snakeHeader"||item.type === "snakeBody"){
-                            this.randomFood()
-                        }else{
+                        if (
+                            item.type === "snakeHeader" ||
+                            item.type === "snakeBody"
+                        ) {
+                            this.randomFood();
+                        } else {
                             item.type = "food";
                         }
                     }
@@ -146,60 +160,56 @@ export default {
         },
         //修改snake 数组的变化
         updateSnake(head) {
-            if (head.x<1||head.x > this.size || head.y<1||head.y > this.size) {
+            if (
+                head.x < 1 ||
+                head.x > this.size ||
+                head.y < 1 ||
+                head.y > this.size
+            ) {
                 //游戏结束
                 clearInterval(this.moveTimer);
                 this.msg = "GameOver！";
-                this.gameover = true
-                return
+                this.gameover = true;
+                return;
             }
             if (head.x === this.food.x && head.y === this.food.y) {
                 this.snake.unshift(head);
                 this.randomFood();
-                this.score++
+                this.score++;
             } else {
                 this.snake.unshift(head);
                 this.snake.pop();
             }
         },
-        keyEvent(event) {
-            let v_this = this;
-            document.onkeydown = function (event) {
-                if(v_this.gameover){
-                    v_this.gameover = false
-                    v_this.initSnakeXy();
-                    v_this.score=0
-                }
-                var e =
-                    event ||
-                    window.event ||
-                    arguments.callee.caller.arguments[0];
-                    v_this.msg = "游戏开始";
+        //控制游戏运行方向
+        changeDirection(e){
+            let v_this = this
+            v_this.msg = "游戏开始";
                 switch (e && e.keyCode) {
                     case 37:
                         console.info("37=左键");
-                        if(v_this.direction!=="right"){
+                        if (v_this.direction !== "right") {
                             v_this.direction = "left";
                             v_this.snakeMove();
                         }
                         break;
                     case 38:
                         console.info("38=上键");
-                        if(v_this.direction!=="down"){
+                        if (v_this.direction !== "down") {
                             v_this.direction = "up";
                             v_this.snakeMove();
                         }
                         break;
                     case 39:
                         console.info("39=右键");
-                        if(v_this.direction!=="left"){
+                        if (v_this.direction !== "left") {
                             v_this.direction = "right";
                             v_this.snakeMove();
                         }
                         break;
                     case 40:
                         console.info("40下键");
-                        if(v_this.direction!=="up"){
+                        if (v_this.direction !== "up") {
                             v_this.direction = "down";
                             v_this.snakeMove();
                         }
@@ -212,7 +222,30 @@ export default {
                     default:
                         break;
                 }
+        },
+        keyEvent(event) {
+            let v_this = this;
+            document.onkeydown = function (event) {
+                if (v_this.gameover) {
+                    v_this.gameover = false;
+                    v_this.initSnakeXy();
+                    v_this.score = 0;
+                }
+                var e =
+                    event ||
+                    window.event ||
+                    arguments.callee.caller.arguments[0];
+                v_this.changeDirection(e)
             };
+        },
+        //移动端滑动事件
+        eventTouch(direction) {
+            if (this.gameover) {
+                this.gameover = false;
+                this.initSnakeXy();
+                this.score = 0;
+            }
+            this.changeDirection({keyCode:direction})
         },
 
         /**
@@ -259,7 +292,7 @@ export default {
     height: 100%;
     width: 100%;
 }
-.note{
+.note {
     margin: 40px;
     font-size: 12px;
 }
