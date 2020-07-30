@@ -1,6 +1,7 @@
 <template>
     <div>
         <div>
+            <h1>摸鱼贪吃蛇</h1>
             <h2>得分:{{score}}</h2>
         </div>
         <div class="hello">
@@ -25,6 +26,9 @@
         <div>
             <h2>{{ msg }}</h2>
         </div>
+        <div class="note">
+            游戏说明：空格键space 暂停游戏,方向键开始游戏
+        </div>
     </div>
 </template>
 
@@ -40,8 +44,9 @@ export default {
             snake: [],
             direction: "down",
             moveTimer: "",
-            msg: "", //提示语
+            msg: "按方向键开始游戏", //提示语
             speed: 200, //速度 ms
+            gameover:true
         };
     },
     watch: {
@@ -141,6 +146,7 @@ export default {
                 //游戏结束
                 clearInterval(this.moveTimer);
                 this.msg = "GameOver！";
+                this.gameover = true
                 return
             }
             if (head.x === this.food.x && head.y === this.food.y) {
@@ -155,6 +161,11 @@ export default {
         keyEvent(event) {
             let v_this = this;
             document.onkeydown = function (event) {
+                if(v_this.gameover){
+                    v_this.gameover = false
+                    v_this.initSnakeXy();
+                    v_this.score=0
+                }
                 var e =
                     event ||
                     window.event ||
@@ -235,5 +246,9 @@ export default {
     background-color: #267888;
     height: 100%;
     width: 100%;
+}
+.note{
+    margin: 40px;
+    font-size: 12px;
 }
 </style>
