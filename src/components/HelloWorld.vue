@@ -54,7 +54,11 @@ export default {
             handler(newval) {
                 this.coordinate.map((item) => {
                     if (item.x === newval.x && item.y === newval.y) {
-                        item.type = "food";
+                        if(item.type ==="snakeHeader"||item.type === "snakeBody"){
+                            this.randomFood()
+                        }else{
+                            item.type = "food";
+                        }
                     }
                 });
             },
@@ -174,23 +178,31 @@ export default {
                 switch (e && e.keyCode) {
                     case 37:
                         console.info("37=左键");
-                        v_this.direction = "left";
-                        v_this.snakeMove();
+                        if(v_this.direction!=="right"){
+                            v_this.direction = "left";
+                            v_this.snakeMove();
+                        }
                         break;
                     case 38:
                         console.info("38=上键");
-                        v_this.direction = "up";
-                        v_this.snakeMove();
+                        if(v_this.direction!=="down"){
+                            v_this.direction = "up";
+                            v_this.snakeMove();
+                        }
                         break;
                     case 39:
                         console.info("39=右键");
-                        v_this.direction = "right";
-                        v_this.snakeMove();
+                        if(v_this.direction!=="left"){
+                            v_this.direction = "right";
+                            v_this.snakeMove();
+                        }
                         break;
                     case 40:
                         console.info("40下键");
-                        v_this.direction = "down";
-                        v_this.snakeMove();
+                        if(v_this.direction!=="up"){
+                            v_this.direction = "down";
+                            v_this.snakeMove();
+                        }
                         break;
                     case 32:
                         console.info("32空格");
