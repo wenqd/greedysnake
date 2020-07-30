@@ -1,5 +1,5 @@
 # greedysnake_vue
-
+## 基于vue实现的贪吃蛇
 ## Project setup
 ```
 npm install
